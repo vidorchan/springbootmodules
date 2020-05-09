@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.vidor.mapper.UserMapper">
+    <select id="getUserList" resultType="User">
+        select * from user;
+    </select>
+    <select id="getAUser" resultType="User">
+        select * from user where id = #{id}
+    </select>
+    <!-- 插入数据并返回自增ID
+        有自增ID功能数据库可以采用useGeneratedKeys="true"开启判断是否是自增ID
+         keyProperty="id"  指定插入数据后自增ID返回时赋值给实体类的那个属性(这里是id属性)
+     -->
+    <insert id="addAUser" parameterType="User" useGeneratedKeys="true" keyProperty="id">
+        insert into user values(null,#{name},#{sex},#{age},#{dob})
+    </insert>
+
+    <delete id="deleteUser">
+        delete from user where id=#{id}
+    </delete>
+
+    <select id="search" parameterType="User" resultType="User">
+        select * from user
+        where 1=1
+        <if test="id != null">
+            and id = #{id}
+        </if>
+        <if test="name != null">
+            and name = #{name}
+        </if>
+        <if test="age != null">
+            and age = #{age}
+        </if>
+        <if test="sex != null">
+            and sex = #{sex}
+        </if>
+        <if test="dob != null">
+            and dob = #{dob}
+        </if>
+    </select>
+
+</mapper>
