@@ -1,13 +1,15 @@
 package com.vidor;
 
+import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class SpringbootmodulesApplication {
+@MapperScan("com.vidor.mapper")
+public class MybatisAnnotationApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(SpringbootmodulesApplication.class, args);
+        SpringApplication.run(MybatisAnnotationApplication.class, args);
     }
 
 }
