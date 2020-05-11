@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.vidor.mapper.RoleMapper">
+<!--    <cache/>-->
+    <select id="getRoleList" resultType="Role" useCache="true">
+        select * from role;
+    </select>
+    <select id="getRoleListById" resultType="Role">
+        select * from user where role_id = #{id}
+    </select>
+    <select id="getRoleListByUserId" resultType="Role">
+        select * from role left join user_role_relation on role.role_id = user_role_relation.role_id
+        where user_role_relation.user_id = #{uid}
+    </select>
+</mapper>

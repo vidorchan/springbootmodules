@@ -1,33 +1,63 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.vidor.mapper.UserMapper">
-    <select id="getUserList" resultType="User">
-        select * from user;
+<!--    <cache/>-->
+    <resultMap id="userList" type="User">
+        <id property="userId" column="user_id"/>
+        <result property="userName" column="user_name"/>
+        <result property="sex" column="sex"/><!-- 必须写，不然结果会为null-->
+        <result property="age" column="age"/>
+        <result property="dob" column="dob"/>
+<!--        <association property="">-->
+<!--            <id column="" property=""/>-->
+<!--            <result column="" property=""/>-->
+<!--            <result column="" property=""/>-->
+<!--        </association>-->
+        <collection property="roles" ofType="com.vidor.pojo.Role">
+            <id property="roleId" column="role_id" />
+            <result property="roleName" column="role_name"/>
+            <result property="roleDesc" column="role_desc"/>
+        </collection>
+    </resultMap>
+
+    <resultMap id="userList1" type="User">
+        <id property="userId" column="user_id"/>
+        <result property="userName" column="user_name"/>
+        <result property="sex" column="sex"/><!-- 必须写，不然结果会为null-->
+        <result property="age" column="age"/>
+        <result property="dob" column="dob"/>
+        <collection property="roles" column="user_id" ofType="com.vidor.pojo.Role" select="com.vidor.mapper.RoleMapper.getRoleListByUserId">
+            <id property="roleId" column="role_id"/>
+            <result property="roleName" column="role_name"/>
+            <result property="roleDesc" column="role_desc"/>
+        </collection>
+    </resultMap>
+
+    <select id="getUserList" resultMap="userList" useCache="true">
+        select * from user u
+            left join user_role_relation ur on u.user_id = ur.user_id
+            left join role r on ur.role_id = r.role_id
     </select>
-    <select id="getAUser" resultType="User">
-        select * from user where id = #{id}
+    <select id="getAUser" resultMap="userList1">
+        select * from user u where u.user_id = #{id}
     </select>
     <!-- 插入数据并返回自增ID
         有自增ID功能数据库可以采用useGeneratedKeys="true"开启判断是否是自增ID
-         keyProperty="id"  指定插入数据后自增ID返回时赋值给实体类的那个属性(这里是id属性)
+         keyProperty="id"  指定插入数据后自增ID返回时赋值给实体类的那个属性(这里是userId属性)
+         只返回1 - 更新成功/0 - 更新失败
      -->
-    <insert id="addAUser" parameterType="User" useGeneratedKeys="true" keyProperty="id">
-        insert into user values(null,#{name},#{sex},#{age},#{dob})
+    <insert id="addAUser" parameterType="User" useGeneratedKeys="true" keyProperty="userId">
+        insert into user values(null,#{userName},#{sex},#{age},#{dob})
+        <selectKey keyProperty="userId" resultType="Integer" order="AFTER">
+            select last_insert_id()
+        </selectKey>
     </insert>
 
     <delete id="deleteUser">
-        delete from user where id=#{id}
+        delete from user where user_id=#{id}
     </delete>
 
-    <select id="search" parameterType="User" resultType="User">
-        select * from user
-        where 1=1
-        <if test="id != null">
-            and id = #{id}
-        </if>
-        <if test="name != null">
-            and name = #{name}
-        </if>
+    <sql id="searchSql">
         <if test="age != null">
             and age = #{age}
         </if>
@@ -37,6 +67,31 @@
         <if test="dob != null">
             and dob = #{dob}
         </if>
+    </sql>
+
+    <select id="search" parameterType="User" resultType="User">
+        select * from user
+        where 1=1
+        <if test="id != null">
+            and user_id = #{id}
+        </if>
+        <if test="name != null">
+            and user_name = #{name}
+        </if>
+        <include refid="searchSql"></include>
+<!--        <foreach collection="ids" item="uid" index="" open="and id in (" close=")" separator=","-->
+<!--                #{uid}-->
+<!--   item：集合中元素迭代时的别名，该参数为必选 index：在list和数组中,index是元素的序号，在map中，index是元素的key，该参数可选         -->
+<!--    collection: 要做foreach的对象    </foreach>-->
+    </select>
+
+    <select id="searchByRange" parameterType="User" resultType="User">
+        select * from user
+        where 1=1
+        <if test="userName != null">
+            and user_name like "%"#{userName}"%"
+        </if>
+        <include refid="searchSql"></include>
     </select>
 
 </mapper>

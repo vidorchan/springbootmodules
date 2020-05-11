@@ -2,12 +2,14 @@ package com.vidor.pojo;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.validation.constraints.Future;
 import java.beans.Transient;
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
 /*
 JPA: @Transient 反序列话
@@ -18,33 +20,35 @@ ObjectMapper
     String writeValueAsString(Object)//序列化
     Object readValue(json, Object.class)//反序列话
  */
+@JsonIgnoreProperties(value = {"handler"})
 public class User {
-    private Integer id;
-    private String name;
+    private Integer userId;
+    private String userName;
 //    @JsonIgnore //加上这个之后，添加操作，数据库中存储为null
     private Integer sex;
     private Integer age;
     //数据库出来格式为"1992-02-01T16:00:00.000+0000"
     @JsonFormat(pattern = "yyyy-MM-dd", timezone = "GMT+8")//序列化注解
     private Date dob;
+    private List<Role> roles;
 
     public User() {
     }
 
-    public Integer getId() {
-        return id;
+    public Integer getUserId() {
+        return userId;
     }
 
-    public void setId(Integer id) {
-        this.id = id;
+    public void setUserId(Integer userId) {
+        this.userId = userId;
     }
 
-    public String getName() {
-        return name;
+    public String getUserName() {
+        return userName;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setUserName(String userName) {
+        this.userName = userName;
     }
 
     public Integer getSex() {
@@ -69,5 +73,13 @@ public class User {
 
     public void setDob(Date dob) {
         this.dob = dob;
+    }
+
+    public List<Role> getRoles() {
+        return roles;
+    }
+
+    public void setRoles(List<Role> roles) {
+        this.roles = roles;
     }
 }

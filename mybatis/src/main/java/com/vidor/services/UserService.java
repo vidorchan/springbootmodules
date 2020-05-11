@@ -11,4 +11,5 @@ public interface UserService {
     int addAUser(User user);
     void deleteAUser(int id);
     List<User> search(User user);
+    List<User> searchByRange(User user);
 }

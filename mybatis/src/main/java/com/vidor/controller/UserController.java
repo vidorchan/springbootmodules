@@ -30,7 +30,7 @@ public class UserController {
     @PostMapping("insertAUserAndReturnId")
     public int insertAUserAndReturnId(@RequestBody User user){
         if(1 == userService.addAUser(user)){
-            return user.getId();
+            return user.getUserId();
         }
         return 0;
     }
@@ -48,6 +48,11 @@ public class UserController {
     @PostMapping("search")
     public List<User> search(@RequestBody User user){
         return userService.search(user);
+    }
+
+    @PostMapping("searchByRange")
+    public List<User> searchUser(@RequestBody User user){
+        return userService.searchByRange(user);
     }
 
 }
