@@ -35,6 +35,12 @@ public class UserController {
         return 0;
     }
 
+    @PostMapping("updateUser")
+    public void updateUser(@RequestBody User user){
+        userService.updateUser(user);
+    }
+
+
     @GetMapping("getAUser/{ID}")
     public User insertAUser(@PathVariable("ID") int id){
         return userService.getAUser(id);

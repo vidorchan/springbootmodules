@@ -1,7 +1,15 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.vidor.mapper.UserMapper">
-<!--    <cache/>-->
+
+<!--        eviction（可用的收回策略）默认为 LRU-->
+<!--        LRU – 最近最少使用的：移除最长时间不被使用的对象。-->
+<!--        FIFO – 先进先出：按对象进入缓存的顺序来移除它们。-->
+<!--        SOFT – 软引用：移除基于垃圾回收器状态和软引用规则的对象。-->
+<!--        WEAK – 弱引用：更积极地移除基于垃圾收集器状态和弱引用规则的对象。-->
+<!--        readOnly=false返回缓存对象的拷贝（通过序列化）,安全-->
+
+    <cache type="com.vidor.Cache.RedisCache" eviction="LRU" size="1024" readOnly="false"/>
     <resultMap id="userList" type="User">
         <id property="userId" column="user_id"/>
         <result property="userName" column="user_name"/>
@@ -26,19 +34,20 @@
         <result property="sex" column="sex"/><!-- 必须写，不然结果会为null-->
         <result property="age" column="age"/>
         <result property="dob" column="dob"/>
-        <collection property="roles" column="user_id" ofType="com.vidor.pojo.Role" select="com.vidor.mapper.RoleMapper.getRoleListByUserId">
+        <collection property="roles" column="user_id" ofType="com.vidor.pojo.Role" select="com.vidor.mapper.RoleMapper.getRoleListByUserId" fetchType="lazy">
             <id property="roleId" column="role_id"/>
             <result property="roleName" column="role_name"/>
             <result property="roleDesc" column="role_desc"/>
         </collection>
     </resultMap>
 
+    <!--useCache默认为true-->
     <select id="getUserList" resultMap="userList" useCache="true">
         select * from user u
             left join user_role_relation ur on u.user_id = ur.user_id
             left join role r on ur.role_id = r.role_id
     </select>
-    <select id="getAUser" resultMap="userList1">
+    <select id="getAUser" resultMap="userList" useCache="true">
         select * from user u where u.user_id = #{id}
     </select>
     <!-- 插入数据并返回自增ID
@@ -56,6 +65,11 @@
     <delete id="deleteUser">
         delete from user where user_id=#{id}
     </delete>
+
+    <update id="updateUser" parameterType="User">
+        update user set user_name=#{userName}, sex=#{sex}, age=#{age}, dob=#{dob}
+        where user_id = #{userId}
+    </update>
 
     <sql id="searchSql">
         <if test="age != null">

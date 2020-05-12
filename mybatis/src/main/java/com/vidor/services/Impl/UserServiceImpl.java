@@ -51,4 +51,10 @@ public class UserServiceImpl implements UserService {
         return userMapper.searchByRange(user);
     }
 
+    @Override
+    public void updateUser(User user) {
+        userMapper.updateUser(user);
+    }
+
+
 }

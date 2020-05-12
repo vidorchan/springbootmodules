@@ -21,7 +21,7 @@ ObjectMapper
     Object readValue(json, Object.class)//反序列话
  */
 @JsonIgnoreProperties(value = {"handler"})
-public class User {
+public class User implements Serializable{
     private Integer userId;
     private String userName;
 //    @JsonIgnore //加上这个之后，添加操作，数据库中存储为null
@@ -81,5 +81,17 @@ public class User {
 
     public void setRoles(List<Role> roles) {
         this.roles = roles;
+    }
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "userId=" + userId +
+                ", userName='" + userName + '\'' +
+                ", sex=" + sex +
+                ", age=" + age +
+                ", dob=" + dob +
+                ", roles=" + roles +
+                '}';
     }
 }
