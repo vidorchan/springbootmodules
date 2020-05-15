@@ -65,7 +65,7 @@ public class RedisCache implements Cache {
         return redisTemplate.delete(key);
     }
 
-    //发生更新时，清除缓存。
+    //发生更新时，清除缓存。flushDb-删除当前库;flushAll--删除当前服务器所有
     @Override
     public void clear() {
 //        RedisTemplate redisTemplate = getRedisTemplate();

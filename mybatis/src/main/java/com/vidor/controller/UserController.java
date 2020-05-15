@@ -4,6 +4,9 @@ import com.fasterxml.jackson.annotation.JsonView;
 import com.vidor.pojo.User;
 import com.vidor.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -43,14 +46,16 @@ public class UserController {
         return 0;
     }
 
+    @CacheEvict(value = "user", key = "#user.userId")
     @PostMapping("updateUser")
     public void updateUser(@RequestBody User user){
         userService.updateUser(user);
     }
 
-
+    @Cacheable(value = "user",key = "#id")
     @GetMapping("getAUser/{ID}")
     public User getAUser(@PathVariable("ID") int id){
+        System.out.println("start...");
         User u = (User) redisTemplate.opsForValue().get("userId-select=" + id);
         if(u == null){
             synchronized (this){
@@ -69,6 +74,7 @@ public class UserController {
         return u;
     }
 
+    @CacheEvict(value = "user", key = "#id")
     @DeleteMapping("deleteAUser/{id}")
     public void deleteAUser(@PathVariable int id){
         userService.deleteAUser(id);
