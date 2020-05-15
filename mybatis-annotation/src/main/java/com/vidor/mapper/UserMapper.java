@@ -32,6 +32,7 @@ public interface UserMapper {
     int addAUser(@Param("user") User user);
 
     @Delete("delete from user where user_id=#{id}")
+    @Update("")
     void deleteUser(@Param("id") int id);
 
 //    @Select("select * from user where ")
