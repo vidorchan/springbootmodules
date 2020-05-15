@@ -6,6 +6,7 @@ import com.vidor.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.annotation.Resource;
 import java.util.List;
 
 @RestController
@@ -14,6 +15,13 @@ public class UserController {
 
     @Autowired
     private UserService userService;
+
+    /**
+     * Resouce:根据名称进行匹配，然后进行类型匹配
+     * Qualifer：根据名称匹配，需要和Autowired一起用，否则报NULL pointer异常
+     */
+    @Resource(name = "redisTemplate")
+    private RedisTemplate<String,Object> redisTemplate;
 
     @GetMapping("getAllUsers")
     public List<User> getAll(){
@@ -42,8 +50,23 @@ public class UserController {
 
 
     @GetMapping("getAUser/{ID}")
-    public User insertAUser(@PathVariable("ID") int id){
-        return userService.getAUser(id);
+    public User getAUser(@PathVariable("ID") int id){
+        User u = (User) redisTemplate.opsForValue().get("userId-select=" + id);
+        if(u == null){
+            synchronized (this){
+                if(u == null){
+                    u = userService.getAUser(id);
+                    redisTemplate.opsForValue().set("userId-select=" + id, u);
+                    System.out.println("从数据库里读取");
+                } else {
+                    System.out.println("从redis缓存里读取");
+                }
+            }
+        } else {
+            System.out.println("从redis缓存里读取");
+        }
+
+        return u;
     }
 
     @DeleteMapping("deleteAUser/{id}")
