@@ -42,4 +42,9 @@ public class SendMessageControllerOps {
         sendMessageService.send("TestQueueTesting","testing", message);
     }
 
+    @PostMapping("/ticket")
+    public void sendTicket(@RequestBody String message){
+        sendMessageService.sendTicket("TicketExchange","ticketing", message);
+    }
+
 }
